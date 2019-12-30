@@ -3,6 +3,7 @@ const winston = require("winston");
 const app = express();
 
 require('./startup/db')();
+require('./startup/logging')();
 
 
 
