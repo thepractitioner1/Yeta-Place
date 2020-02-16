@@ -1,8 +1,8 @@
 const express = require('express');
-const users = require('../model/user');
+const user = require('../routes/user');
 
 
 module.exports = function(app){
     app.use(express.json());
-    app.use('/api/users', users);
+    app.use('/api/user', user);
 }

@@ -1,16 +1,12 @@
 const jwt = require('jsonwebtoken');
 const config = require('config');
-const Joi = require("jsonwebtoken");
+const Joi = require("joi");
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    firstname: {
+    username: {
         type: String,
         required: true,
-    },
-    lastname: {
-        type: String,
-        required: true
     },
     email: {
         type: String,
@@ -20,16 +16,17 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        maxlength: 30
+        minlength: 5,
+        maxlength: 1024
     },
-    isadmin: {
+    isadmin:{
         type: Boolean,
         default: false
     }
 });
 
 userSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ id: this._id, isadmin: this.isadmin }, config.get('jwtPrivateKey'));
+    const token = jwt.sign({ _id: this._id,username:this.username, isadmin: this.isadmin }, config.get('jwtPrivateKey'));
     return token;
 };
 
@@ -37,10 +34,9 @@ const User = mongoose.model('User', userSchema);
 
 function validateUser(user) {
     const schema = {
-        firstname: Joi.string().min(1).max(255).required(),
-        lastname: Joi.string().min(1).max(255).required(),
+        username: Joi.string().min(1).max(50).required(),
         email: Joi.string().min(1).max(255).email().required(),
-        password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+        password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required()
     };
     return Joi.validate(user, schema)
 }
