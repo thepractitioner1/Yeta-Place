@@ -4,6 +4,7 @@ const router = express.Router();
 const _ = require('lodash');
 const { User, validate } = require("..//model/user");
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 
 
 router.get('/', auth, async (req, res) => {
@@ -15,6 +16,11 @@ router.get('/me', auth, async (req, res) => {
   
     const user = await User.findById(req.user._id).select("-password");
     res.send(user);
+})
+
+router.get('/:id',[admin, auth], async(req, res)=>{
+    const user = await User.findById(req.params._id);
+    res.send(_.pick(user, ["username, isadmin, email"]));
 })
 
 router.post('/createUser', async(req,res)=>{
@@ -35,6 +41,13 @@ router.post('/createUser', async(req,res)=>{
     .header("access-control-expose-headers", "x-auth-token")
     .send(_.pick(user, ["_id", "username", "email"]));
 
+})
+
+router.delete("/delete/:id",[auth, admin], async(req, res)=>{
+    let user = await User.findByIdAndRemove(req.params._id);
+    if(!user) return res.status(404).send("The user with the given ID was not found");
+
+    res.send(user);
 })
 
 module.exports = router;

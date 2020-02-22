@@ -43,3 +43,4 @@ function validateUser(user) {
 
 exports.validate = validateUser;
 exports.User = User;
+exports.userSchema = userSchema;
