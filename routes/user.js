@@ -7,7 +7,7 @@ const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 
 
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
     const user = await User.find().sort("-name");
     res.send(user);
 });
@@ -18,9 +18,15 @@ router.get('/me', auth, async (req, res) => {
     res.send(user);
 })
 
-router.get('/:id',[admin, auth], async(req, res)=>{
-    const user = await User.findById(req.params._id);
-    res.send(_.pick(user, ["username, isadmin, email"]));
+router.get('/:id', auth, async(req, res)=>{
+    const user = await User.findById(req.params.id);
+   
+   
+  if (!user) return res.status(404).send("The user with the given ID was not found.");
+
+    // res.send(user);
+    res.send(_.pick(user, ["username", "_id", "email"]));
+    
 })
 
 router.post('/createUser', async(req,res)=>{
