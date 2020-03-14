@@ -35,12 +35,21 @@ const User = mongoose.model('User', userSchema);
 function validateUser(user) {
     const schema = {
         username: Joi.string().min(1).max(50).required(),
-        email: Joi.string().min(1).max(255).email().required(),
-        password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required()
+        email: Joi.string().min(3).max(255).email().required(),
+        password: Joi.string().regex(/^[a-zA-Z0-9]{5,30}$/).required(),
+        isadmin:Joi.boolean()
+    };
+    return Joi.validate(user, schema)
+}
+
+function validatePassword(user){
+    const schema = {
+        password: Joi.string().regex(/^[a-zA-Z0-9]{5,30}$/).required()
     };
     return Joi.validate(user, schema)
 }
 
 exports.validate = validateUser;
 exports.User = User;
+exports.validatePassword = validatePassword; 
 exports.userSchema = userSchema;
